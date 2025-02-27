@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require('mongoose');
 require("dotenv").config();
+const userRoutes = require('./routes/userRoutes')
 
 const app = express();
 
@@ -15,10 +16,11 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch((err) => console.error('Failed to connect to MongoDB', err));
 
 // Routes
-// app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 
 // Home route
 app.get("/", (req, res) => {
+  console.log('process.env.MONGO_URI',process.env.MONGO_URI)
   res.send("🚀 Express Server is Running!");
 });
 
