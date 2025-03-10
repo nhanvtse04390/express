@@ -1,19 +1,22 @@
 const User = require("../models/User")
-const Users = require("../models/User")
+const jwt = require("jsonwebtoken");
 
 exports.userLogin = async (req, res) => {
-	const {email} = req.body
+	const {email,password} = req.body
 
 	try {
-		const user = await User.findOne({email});
+		const user = await User.findOne({email,password});
 		if(!user) {
-			return res.status(401).json({message: "Tai khoan hoac mat khau khong dung"})
+			return res.status(401).json({message: "Tài khoản hoặc mật khẩu không đúng!"})
 		} else {
-			res.status(200).json({message: "ban da tao tai khoan thanh cong!!!"})
+			const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
+				expiresIn: process.env.JWT_EXPIRES_IN
+			  });
+			res.status(200).json({message: "Đăng nhập thành công!",token})
 		}
 
 	} catch (error) {
-		console.log("Loing error", error)
+		console.log("login error", error)
 		res.status(500).json({message: "Internal server error"});
 	}
 }
