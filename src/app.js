@@ -18,6 +18,8 @@ mongoose.connect(process.env.MONGO_URI, {
 // Routes
 app.use("/api/users", require("./routes/userRoutes"));
 
+app.use("/api/login", require("./routes/login"));
+
 // Home route
 app.get("/", (req, res) => {
   console.log('process.env.MONGO_URI',process.env.MONGO_URI)
