@@ -17,8 +17,8 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.use("/api/users", require("./routes/userRoutes"));
-
 app.use("/api/login", require("./routes/login"));
+app.use("/api/register", require("./routes/register"));
 
 // Home route
 app.get("/", (req, res) => {
