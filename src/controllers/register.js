@@ -6,13 +6,13 @@ exports.save =  async (req,res) => {
 	const userAlready = await User.findOne({email})
 	try {
 		if(userAlready) {
-			return res.status(409).json({message: 'Tài khoản này đã tồn tại!'})
+			return res.status(409).json({status: 409,message: 'Tài khoản này đã tồn tại!'}) 
 		} else {
 			user.save()
-			res.status(201).json({message: "Tạo tài khoản thành công"})
+			res.status(201).json({status: 201,message: "Tạo tài khoản thành công"})
 		}
 			
 	} catch (error) {
 		return res.status(500).json({message: "Internal server error"});
 	}
-}
+} 

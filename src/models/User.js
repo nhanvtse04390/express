@@ -8,5 +8,5 @@ const userSchema = new mongoose.Schema({
 	updatedAt: { type: Date, default: Date.now },
 	codeRef: {type: String}
 });
-
+ 
 module.exports = mongoose.model('User', userSchema)
