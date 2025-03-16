@@ -15,7 +15,7 @@ exports.userLogin = async (req, res) => {
 				const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
 					expiresIn: process.env.JWT_EXPIRES_IN
 				  });
-				res.status(200).json({status: 401,message: "Đăng nhập thành công!",token})
+				res.status(200).json({status: 401,message: "Đăng nhập thành công!",token,info: user})
 			} else {
 				return res.status(401).json({status: 401,message: "Tài khoản hoặc mật khẩu không đúng!"})
 			}
