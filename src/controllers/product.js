@@ -19,7 +19,7 @@ exports.addNew = async (req, res) => {
         }
 
         // Tạo sản phẩm mới
-        const product = new Product({ name, price });
+        const product = new Product({ ...req.body });
         await product.save();
 
         return res.status(201).json({ status: 201, message: "Sản phẩm đã được tạo thành công!" });
