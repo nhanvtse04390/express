@@ -31,7 +31,7 @@ exports.addNew = async (req, res) => {
 
 exports.getList = async (req, res) => {
   try {
-    let { page = 1, rowsPerPage = 10 } = req.query;
+    let { page = 1, rowsPerPage} = req.query;
 
     // Chuyển đổi thành số nguyên
     page = parseInt(page, 10);
@@ -39,7 +39,7 @@ exports.getList = async (req, res) => {
 
     // Kiểm tra nếu giá trị không hợp lệ, gán mặc định
     if (isNaN(page) || page < 1) page = 1;
-    if (isNaN(rowsPerPage) || rowsPerPage < 1) rowsPerPage = 10;
+    if (isNaN(rowsPerPage) || rowsPerPage < 1) rowsPerPage;
 
     // Tính toán offset
     const skip = (page - 1) * rowsPerPage;
@@ -65,3 +65,17 @@ exports.getList = async (req, res) => {
   }
 };
 
+exports.getProductById = async (req, res) => {
+    try {
+        const { _id } = req.params;
+        const product = await Product.findById(_id);
+    
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+    
+        res.json(product);
+      } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+      }
+  };
