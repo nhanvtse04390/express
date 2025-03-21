@@ -79,3 +79,34 @@ exports.getProductById = async (req, res) => {
         res.status(500).json({ message: "Server error", error });
       }
   };
+
+  exports.deleteImage = async (req, res) => {
+    console.log(">>>>>>>>>>")
+	try {
+		const { productId } = req.params;
+		const { imageUrl } = req.body; // Ảnh cần xóa
+	
+		if (!imageUrl) {
+		  return res.status(400).json({ message: "Thiếu đường dẫn ảnh cần xóa!" });
+		}
+	
+		// Tìm sản phẩm và cập nhật mảng image
+		const updatedProduct = await Product.findByIdAndUpdate(
+		  productId,
+		  { $pull: { image: imageUrl } }, // Xóa ảnh cụ thể khỏi mảng
+		  { new: true }
+		);
+	
+		if (!updatedProduct) {
+		  return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+		}
+	
+		return res.json({
+		  message: "Xóa ảnh thành công!",
+		  product: updatedProduct,
+		});
+	  } catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Lỗi server!" });
+	  }
+}
