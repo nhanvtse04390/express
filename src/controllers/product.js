@@ -81,7 +81,9 @@ exports.getProductById = async (req, res) => {
   };
 
   exports.deleteImage = async (req, res) => {
-    console.log(">>>>>>>>>>")
+  console.log("req.params",req.params)
+  console.log("req.req.body",req.body)
+
 	try {
 		const { productId } = req.params;
 		const { imageUrl } = req.body; // Ảnh cần xóa
@@ -92,7 +94,7 @@ exports.getProductById = async (req, res) => {
 	
 		// Tìm sản phẩm và cập nhật mảng image
 		const updatedProduct = await Product.findByIdAndUpdate(
-		  productId,
+		  { _id: productId },
 		  { $pull: { image: imageUrl } }, // Xóa ảnh cụ thể khỏi mảng
 		  { new: true }
 		);
