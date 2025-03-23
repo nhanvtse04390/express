@@ -81,8 +81,6 @@ exports.getProductById = async (req, res) => {
   };
 
   exports.deleteImage = async (req, res) => {
-  console.log("req.params",req.params)
-  console.log("req.req.body",req.body)
 
 	try {
 		const { productId } = req.params;
@@ -112,3 +110,27 @@ exports.getProductById = async (req, res) => {
 		res.status(500).json({ message: "Lỗi server!" });
 	  }
 }
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const { productId } = req.params; // Lấy ID sản phẩm từ request
+    console.log("id",productId)
+
+    const updateData = req.body; // Dữ liệu cập nhật từ client
+
+    // Cập nhật sản phẩm bằng findByIdAndUpdate
+    const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, { 
+      new: true, // Trả về dữ liệu đã cập nhật
+      runValidators: true, // Chạy validate nếu có schema validation
+    });
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+    }
+
+    res.status(200).json({ message: "Cập nhật thành công", product: updatedProduct });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+};
+

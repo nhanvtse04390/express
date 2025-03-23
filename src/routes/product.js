@@ -6,5 +6,6 @@ router.post('/add-new', controller.addNew)
 router.get('/list', controller.getList)
 router.get('/:_id', controller.getProductById)
 router.put('/:productId/remove-image', controller.deleteImage)
+router.put('/:productId/edit', controller.updateProduct)
 
 module.exports = router
