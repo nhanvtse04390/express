@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require('mongoose');
 require("dotenv").config();
-const userRoutes = require('./routes/userRoutes')
 
 const app = express();
 
@@ -16,7 +15,7 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch((err) => console.error('Failed to connect to MongoDB', err));
 
 // Routes
-app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/users", require("./routes/user"));
 app.use("/api/login", require("./routes/login"));
 app.use("/api/register", require("./routes/register"));
 app.use("/api/product", require("./routes/product"))

@@ -114,7 +114,6 @@ exports.getProductById = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { productId } = req.params; // Lấy ID sản phẩm từ request
-    console.log("id",productId)
 
     const updateData = req.body; // Dữ liệu cập nhật từ client
 
