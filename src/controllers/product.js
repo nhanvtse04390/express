@@ -45,10 +45,10 @@ exports.getList = async (req, res) => {
     const skip = (page - 1) * rowsPerPage;
 
     // Lấy dữ liệu có phân trang
-    const list = await Product.find().skip(skip).limit(rowsPerPage);
+    const list = await Product.find({ isActive: true }).skip(skip).limit(rowsPerPage);
 
     // Đếm tổng số sản phẩm
-    const totalItems = await Product.countDocuments();
+    const totalItems = await Product.countDocuments({ isActive: true });
 
     return res.status(200).json({
       status: 200,
@@ -133,4 +133,27 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
+
+exports.deleteProduct = async (req, res) => {
+    try {
+        const { _id } = req.params;
+    
+        const updatedProduct = await Product.findByIdAndUpdate(
+            _id,
+          { isActive: false }, // Cập nhật trạng thái active thành false
+          { new: true }
+        );
+    
+        if (!updatedProduct) {
+          return res.status(404).json({status:404, error: 'Sản phẩm không tồn tại' });
+        }
+    
+        res.json({status: 200, message: 'Sản phẩm đã được vô hiệu hóa!', product: updatedProduct });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({status:500, error: 'Lỗi khi vô hiệu hóa sản phẩm' });
+      }
+  };
+
+
 
