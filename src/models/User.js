@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 	codeRef: {type: String},
-	isAdmin: {type: Boolean, default: false}
+	isAdmin: {type: Boolean, default: false},
+	isActive: {type: Boolean, default: true},
 });
  
 module.exports = mongoose.model('User', userSchema)
