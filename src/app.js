@@ -27,6 +27,7 @@ app.use("/api/users", require("./routes/users"));
 app.use("/api/login", require("./routes/login"));
 app.use("/api/register", require("./routes/register"));
 app.use("/api/product", require("./routes/product"));
+app.use("/api/order", require("./routes/order"));
 
 // Home route
 app.get("/", (req, res) => {
