@@ -84,3 +84,18 @@ exports.getListOrder = async (req, res) => {
     return res.status(500).json({ status: 500, message: "Lỗi server nội bộ!" });
   }
 };
+
+exports.getOrderById = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const order = await Order.findById(_id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Kong tim thay don hang" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
