@@ -12,7 +12,7 @@ exports.addNew = async (req, res) => {
       items.length === 0 ||
       !totalAmount ||
       !paymentMethod ||
-      !shippingAddress
+      !shippingAddress 
     ) {
       return res
         .status(400)
@@ -62,7 +62,7 @@ exports.getListOrder = async (req, res) => {
     if (orderStatus) {
       if (typeof orderStatus === "string") {
         orderStatus = orderStatus.split(","); // Chuyển chuỗi thành mảng
-      }
+      } 
       filter.orderStatus = { $in: orderStatus };
     }
 
@@ -75,7 +75,7 @@ exports.getListOrder = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(rowsPerPage)
-      .lean();
+	  .lean();
 
     // Đếm tổng số đơn hàng sau khi lọc
     const totalItems = await Order.countDocuments(filter);
@@ -96,58 +96,17 @@ exports.getListOrder = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 exports.getOrderById = async (req, res) => {
   try {
     const { _id } = req.params;
     const order = await Order.findById(_id);
 
     if (!order) {
-      return res.status(404).json({ message: "Kong tim thay don hang" });
-=======
-
-
-exports.getOrderById = async (req, res) => {
-  try {
-    const { _id } = req.params;
-    const order = await Order.findById(_id).populate("userId", "username email phone codeRef");
-
-    if (!order) {
-      return res.status(404).json({ message: "Product not found" });
->>>>>>> 21a15d4323c9ab8e9c176ad6d655c6b96afa8566
+      return res.status(404).json({ message: "Kong tim thay don hang  " });
     }
 
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
-<<<<<<< HEAD
-=======
-};
-
-exports.updateOrderById = async (req, res) => {
-  try {
-    const { _id } = req.params;
-    const orderStatus  = req.body;
-
-    const updatedOrder = await Order.findByIdAndUpdate(
-      _id,
-      orderStatus,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
-    }
-
-    res
-      .status(200)
-      .json({ message: "Cập nhật thành công", product: updatedOrder });
-  } catch (error) {
-    res.status(500).json({ message: "Lỗi server", error: error.message });
-  }
->>>>>>> 21a15d4323c9ab8e9c176ad6d655c6b96afa8566
-};
+}; 
