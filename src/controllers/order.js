@@ -109,4 +109,30 @@ exports.getOrderById = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
-}; 
+}
+
+exports.updateOrderById = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const orderStatus  = req.body;
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      _id,
+      orderStatus,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Cập nhật thành công", product: updatedOrder });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+};
