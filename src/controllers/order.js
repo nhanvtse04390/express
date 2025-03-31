@@ -47,7 +47,7 @@ exports.addNew = async (req, res) => {
 
 exports.getListOrder = async (req, res) => {
   try {
-    let { page = 1, rowsPerPage } = req.query;
+    let { page = 1, rowsPerPage, orderStatus } = req.query;
 
     // Chuyển đổi thành số nguyên
     page = parseInt(page, 10);
@@ -55,21 +55,30 @@ exports.getListOrder = async (req, res) => {
 
     // Kiểm tra nếu giá trị không hợp lệ, gán mặc định
     if (isNaN(page) || page < 1) page = 1;
-    if (isNaN(rowsPerPage) || rowsPerPage < 1) rowsPerPage;
+    if (isNaN(rowsPerPage) || rowsPerPage < 1) rowsPerPage = 10;
+
+    // Xử lý orderStatus: Nếu là chuỗi, chuyển thành mảng
+    let filter = {};
+    if (orderStatus) {
+      if (typeof orderStatus === "string") {
+        orderStatus = orderStatus.split(","); // Chuyển chuỗi thành mảng
+      }
+      filter.orderStatus = { $in: orderStatus };
+    }
 
     // Tính toán offset
     const skip = (page - 1) * rowsPerPage;
 
     // Lấy dữ liệu có phân trang
-    const list = await Order.find()
+    const list = await Order.find(filter)
       .populate("userId", "username email phone codeRef")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(rowsPerPage)
-	  .lean();
+      .lean();
 
-    // Đếm tổng số sản phẩm
-    const totalItems = await Order.countDocuments();
+    // Đếm tổng số đơn hàng sau khi lọc
+    const totalItems = await Order.countDocuments(filter);
 
     return res.status(200).json({
       status: 200,
@@ -82,9 +91,12 @@ exports.getListOrder = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error fetching orders:", error);
     return res.status(500).json({ status: 500, message: "Lỗi server nội bộ!" });
   }
 };
+
+
 
 exports.getOrderById = async (req, res) => {
   try {
@@ -98,5 +110,31 @@ exports.getOrderById = async (req, res) => {
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+exports.updateOrderById = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const orderStatus  = req.body;
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      _id,
+      orderStatus,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Cập nhật thành công", product: updatedOrder });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
