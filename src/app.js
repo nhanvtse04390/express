@@ -28,6 +28,7 @@ app.use("/api/login", require("./routes/login"));
 app.use("/api/register", require("./routes/register"));
 app.use("/api/product", require("./routes/product"));
 app.use("/api/order", require("./routes/order"));
+app.use("/api/statistical", require("./routes/statistical"));
 
 // Home route
 app.get("/", (req, res) => {
