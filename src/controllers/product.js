@@ -40,7 +40,6 @@ exports.addNew = async (req, res) => {
 exports.getList = async (req, res) => {
   try {
     let { page = 1, rowsPerPage } = req.query;
-
     // Chuyển đổi thành số nguyên
     page = parseInt(page, 10);
     rowsPerPage = parseInt(rowsPerPage, 10);

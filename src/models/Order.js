@@ -43,6 +43,7 @@ const OrderSchema = new mongoose.Schema(
     transactionId: { type: String, default: null }, // ID giao dịch từ VNPay/Momo
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+    codeRef: { type: String, default: "67eb61f476e957124cb49bb7"},
   },
   { timestamps: true }
 );

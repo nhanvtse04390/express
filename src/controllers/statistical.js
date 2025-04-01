@@ -1,53 +1,92 @@
-const Order = require("../models/Order");
 const User = require("../models/User");
 
 exports.getUsersWithReferralOrders = async (req, res) => {
   try {
+    let { page, rowsPerPage } = req.query;
+
+    // Chuyển đổi thành số nguyên
+    page = parseInt(page, 10);
+    rowsPerPage = parseInt(rowsPerPage, 10);
+
+    // Kiểm tra nếu giá trị không hợp lệ, gán mặc định
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(rowsPerPage) || rowsPerPage < 1) rowsPerPage;
+    // Xác định số lượng bản ghi bỏ qua
+    const skip = (page - 1) * rowsPerPage;
+
     const users = await User.aggregate([
       {
         $lookup: {
-          from: "users", // Lấy danh sách referrals (người được giới thiệu)
-          localField: "_id", // ID của user
-          foreignField: "codeRef", // codeRef của người khác trỏ đến _id của user này
-          as: "referrals",
-        },
+          from: "orders",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [{ $toObjectId: "$codeRef" }, "$$userId"] }
+              }
+            }
+          ],
+          as: "referredOrders"
+        }
+      },
+      {
+        $match: {
+          referredOrders: { $ne: [] } // Chỉ lấy User có đơn hàng được giới thiệu
+        }
       },
       {
         $addFields: {
-          totalReferrals: { $size: "$referrals" }, // Đếm số lượng referrals
-        },
-      },
-      {
-        $lookup: {
-          from: "orders", // Tìm đơn hàng của các referrals
-          localField: "referrals._id", // ID của referrals
-          foreignField: "userId", // So sánh với userId trong Order
-          as: "referralOrders",
-        },
-      },
-      {
-        $addFields: {
-          totalOrdersFromReferrals: { $size: "$referralOrders" }, // Đếm số lượng đơn hàng
-        },
+          totalAmount: { $sum: "$referredOrders.totalAmount" }
+        }
       },
       {
         $project: {
           _id: 1,
           username: 1,
           email: 1,
-          totalReferrals: 1,
-          totalOrdersFromReferrals: 1,
-        },
+          totalAmount: 1,
+          phone: 1,
+        }
       },
-      { $sort: { totalOrdersFromReferrals: -1 } }, // Sắp xếp theo số đơn hàng nhiều nhất
+      { $skip: skip },
+      { $limit: rowsPerPage }
     ]);
+
+    // Đếm tổng số Users đủ điều kiện
+    const totalUsers = await User.aggregate([
+      {
+        $lookup: {
+          from: "orders",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [{ $toObjectId: "$codeRef" }, "$$userId"] }
+              }
+            }
+          ],
+          as: "referredOrders"
+        }
+      },
+      { $match: { referredOrders: { $ne: [] } } },
+      { $count: "total" }
+    ]);
+
+    const totalItems = totalUsers.length > 0 ? totalUsers[0].total : 0;
 
     return res.status(200).json({
       status: 200,
       users,
+      pagination: {
+        page,
+        rowsPerPage,
+        totalItems,
+        totalPages: Math.ceil(totalItems / rowsPerPage),
+      },
     });
+
   } catch (error) {
-    console.error("Lỗi khi lấy danh sách referrals:", error);
-    return res.status(500).json({ status: 500, message: "Lỗi server nội bộ!" });
+    console.error("Lỗi khi lấy danh sách users:", error);
+    res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
